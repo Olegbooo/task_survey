@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(0.5),
     marginTop: theme.spacing(2),
     cursor: 'pointer',
+    flexWrap: 'wrap',
   },
   star: {
     fontSize: '3rem',
@@ -22,6 +23,15 @@ const useStyles = makeStyles((theme) => ({
     '&.active': {
       color: theme.palette.warning.main,
     },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2rem',
+    },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '1.5rem',
+    },
+  },
+  starActive: {
+    color: theme.palette.warning.main,
   },
   starBorder: {
     fontSize: '3rem',
@@ -30,6 +40,15 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       color: theme.palette.warning.main,
     },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2rem',
+    },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '1.5rem',
+    },
+  },
+  starBorderActive: {
+    color: theme.palette.warning.main,
   },
 }));
 
@@ -46,20 +65,14 @@ const LinearScaleQuestion = ({ question, value, onChange }) => {
   const handleMouseEnter = (e, hoverIndex) => {
     const starElements = e.currentTarget.parentElement.children;
     for (let i = 0; i <= hoverIndex; i++) {
-      const icon = starElements[i].querySelector('svg');
-      if (icon) {
-        icon.style.color = theme.palette.warning.main;
-      }
+      starElements[i].classList.add('hovered');
     }
   };
 
   const handleMouseLeave = (e) => {
     const starElements = e.currentTarget.parentElement.children;
     for (let i = 0; i < starElements.length; i++) {
-      const icon = starElements[i].querySelector('svg');
-      if (icon) {
-        icon.style.color = i < currentValue ? theme.palette.warning.main : theme.palette.grey[300];
-      }
+      starElements[i].classList.remove('hovered');
     }
   };
 
@@ -77,7 +90,7 @@ const LinearScaleQuestion = ({ question, value, onChange }) => {
             onMouseLeave={handleMouseLeave}
           >
             {isActive ? (
-              <StarIcon className={classes.star} />
+              <StarIcon className={`${classes.star} ${classes.starActive}`} />
             ) : (
               <StarBorderIcon className={classes.starBorder} />
             )}

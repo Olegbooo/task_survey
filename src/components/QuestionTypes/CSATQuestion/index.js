@@ -14,6 +14,14 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 0,
       },
     },
+    [theme.breakpoints.down('sm')]: {
+      '& > *': {
+        marginRight: theme.spacing(1),
+        '&:last-child': {
+          marginRight: 0,
+        },
+      },
+    },
   },
   emojiButton: {
     fontSize: '3rem',
@@ -29,11 +37,32 @@ const useStyles = makeStyles((theme) => ({
       border: `3px solid ${theme.palette.primary.main}`,
       backgroundColor: theme.palette.primary.light,
     },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2rem',
+      width: 56,
+      height: 56,
+      border: '1.5px solid transparent',
+      '&.selected': {
+        border: `2px solid ${theme.palette.primary.main}`,
+      },
+    },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '1.8rem',
+      width: 50,
+      height: 50,
+    },
   },
   emojiLabel: {
     fontSize: '0.8rem',
     marginTop: theme.spacing(1),
     textAlign: 'center',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.75rem !important',
+      marginTop: theme.spacing(0.5),
+    },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.7rem !important',
+    },
   },
 }));
 
