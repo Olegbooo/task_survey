@@ -113,12 +113,14 @@ const CountryFlag = ({ country, className }) => {
 
 const PhoneNumberQuestion = ({ value, onChange }) => {
   const classes = useStyles();
-  const [selectedCountry, setSelectedCountry] = useState('US');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const [countrySearchTerm, setCountrySearchTerm] = useState('');
-  const [filteredCountries, setFilteredCountries] = useState([]);
+  const [state, setState] = useState({
+    selectedCountry: 'US',
+    phoneNumber: '',
+    isCountryDropdownOpen: false,
+    dropdownPosition: { top: 0, left: 0 },
+    countrySearchTerm: '',
+    filteredCountries: [],
+  });
 
   const options = useMemo(() => 
     getCountries().map((country) => ({
@@ -140,101 +142,114 @@ const PhoneNumberQuestion = ({ value, onChange }) => {
         );
         
         if (foundCountry) {
-          setSelectedCountry(foundCountry.value);
-          setPhoneNumber(phonePart);
+          setState(prev => ({
+            ...prev,
+            selectedCountry: foundCountry.value,
+            phoneNumber: phonePart,
+          }));
         }
       }
     }
   }, [value, options]);
 
   useEffect(() => {
-    setFilteredCountries(options);
+    setState(prev => ({ ...prev, filteredCountries: options }));
   }, [options]);
 
   const handlePhoneChange = (event) => {
     const newValue = event.target.value;
-    setPhoneNumber(newValue);
-    
-    const fullNumber = `+${getCountryCallingCode(selectedCountry)}${newValue}`;
+    setState(prev => ({ ...prev, phoneNumber: newValue }));
+    const fullNumber = `+${getCountryCallingCode(state.selectedCountry)}${newValue}`;
     onChange(fullNumber);
   };
 
   const handleCountryChange = (countryCode) => {
-    setSelectedCountry(countryCode);
-    setCountrySearchTerm('');
-    setIsCountryDropdownOpen(false);
-    
-    const fullNumber = `+${getCountryCallingCode(countryCode)}${phoneNumber}`;
+    setState(prev => ({
+      ...prev,
+      selectedCountry: countryCode,
+      countrySearchTerm: '',
+      isCountryDropdownOpen: false,
+    }));
+    const fullNumber = `+${getCountryCallingCode(countryCode)}${state.phoneNumber}`;
     onChange(fullNumber);
   };
 
   const handleCountrySearch = (event) => {
     const searchTerm = event.target.value;
-    
     if (searchTerm === '' || searchTerm === '+') {
-      setCountrySearchTerm(searchTerm);
-      setIsCountryDropdownOpen(true);
-      setFilteredCountries(options);
+      setState(prev => ({
+        ...prev,
+        countrySearchTerm: searchTerm,
+        isCountryDropdownOpen: true,
+        filteredCountries: options,
+      }));
       return;
     }
     
-
     if (searchTerm.match(/^\+\d{1,3}$/)) {
-      setCountrySearchTerm(searchTerm);
-      setIsCountryDropdownOpen(true);
-      
+      setState(prev => ({
+        ...prev,
+        countrySearchTerm: searchTerm,
+        isCountryDropdownOpen: true,
+      }));
       const code = searchTerm.substring(1);
       const filtered = options.filter(option => 
         option.code.startsWith(code) || option.code === code
       );
-      
-      setFilteredCountries(filtered);
-      
+      setState(prev => ({ ...prev, filteredCountries: filtered }));
       const foundCountry = options.find(option => option.code === code);
       if (foundCountry) {
-        setSelectedCountry(foundCountry.value);
-        const fullNumber = `+${getCountryCallingCode(foundCountry.value)}${phoneNumber}`;
+        setState(prev => ({ ...prev, selectedCountry: foundCountry.value }));
+        const fullNumber = `+${getCountryCallingCode(foundCountry.value)}${state.phoneNumber}`;
         onChange(fullNumber);
-        setCountrySearchTerm('');
+        setState(prev => ({ ...prev, countrySearchTerm: '' }));
       }
-    } else if (searchTerm === '') {
-      setCountrySearchTerm('');
-      setCountrySearchTerm(`+${getCountryCallingCode(selectedCountry)}`);
+      return;
+    }
+
+    if (searchTerm === '') {
+      setState(prev => ({ ...prev, countrySearchTerm: '' }));
+      setState(prev => ({ ...prev, countrySearchTerm: `+${getCountryCallingCode(state.selectedCountry)}` }));
     }
   };
 
   const handleCountryFocus = (event) => {
     if (event.target) {
       const rect = event.target.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-      });
+      setState(prev => ({
+        ...prev,
+        dropdownPosition: {
+          top: rect.bottom + window.scrollY,
+          left: rect.left + window.scrollX,
+        },
+      }));
     }
-    setIsCountryDropdownOpen(true);
-    setFilteredCountries(options);
+    setState(prev => ({ ...prev, isCountryDropdownOpen: true, filteredCountries: options }));
   };
 
   const handleArrowClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
     const rect = event.target.closest('.MuiInputBase-root').getBoundingClientRect();
-    setDropdownPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-    });
-    setIsCountryDropdownOpen(!isCountryDropdownOpen);
-    setFilteredCountries(options);
+    setState(prev => ({
+      ...prev,
+      dropdownPosition: {
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+      },
+      isCountryDropdownOpen: !prev.isCountryDropdownOpen,
+      filteredCountries: options,
+    }));
   };
 
   const handleClickAway = () => {
-    setIsCountryDropdownOpen(false);
+    setState(prev => ({ ...prev, isCountryDropdownOpen: false }));
   };
 
   const handleCountryBlur = () => {
-    setCountrySearchTerm('');
+    setState(prev => ({ ...prev, countrySearchTerm: '' }));
     setTimeout(() => {
-      setCountrySearchTerm(`+${getCountryCallingCode(selectedCountry)}`);
+      setState(prev => ({ ...prev, countrySearchTerm: `+${getCountryCallingCode(prev.selectedCountry)}` }));
     }, 100);
   };
 
@@ -246,7 +261,7 @@ const PhoneNumberQuestion = ({ value, onChange }) => {
           variant="outlined"
           size="small"
           placeholder="+1"
-          value={countrySearchTerm || `+${getCountryCallingCode(selectedCountry)}`}
+          value={state.countrySearchTerm || `+${getCountryCallingCode(state.selectedCountry)}`}
           onChange={handleCountrySearch}
           onFocus={handleCountryFocus}
           onBlur={handleCountryBlur}
@@ -254,7 +269,7 @@ const PhoneNumberQuestion = ({ value, onChange }) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <CountryFlag country={selectedCountry} className={classes.selectedFlag} />
+                <CountryFlag country={state.selectedCountry} className={classes.selectedFlag} />
               </InputAdornment>
             ),
             endAdornment: (
@@ -273,23 +288,23 @@ const PhoneNumberQuestion = ({ value, onChange }) => {
           variant="outlined"
           size="small"
           placeholder="Enter phone number"
-          value={phoneNumber}
+          value={state.phoneNumber}
           onChange={handlePhoneChange}
           inputProps={{
             type: 'tel',
           }}
         />
 
-        {isCountryDropdownOpen && filteredCountries.length > 0 && (
+        {state.isCountryDropdownOpen && state.filteredCountries.length > 0 && (
           <Portal>
             <Paper 
               className={classes.dropdown}
               style={{
-                top: dropdownPosition.top,
-                left: dropdownPosition.left,
+                top: state.dropdownPosition.top,
+                left: state.dropdownPosition.left,
               }}
             >
-              {filteredCountries.map((option) => (
+              {state.filteredCountries.map((option) => (
                 <div
                   key={option.value}
                   className={classes.menuItem}

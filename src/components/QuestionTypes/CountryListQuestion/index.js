@@ -78,12 +78,13 @@ const CountryListQuestion = ({ onChange }) => {
     
     if (term === '') {
       setFilteredCountries(countries);
-    } else {
-      const filtered = countries.filter(country => 
-        country.name.toLowerCase().includes(term)
-      );
-      setFilteredCountries(filtered);
+      return;
     }
+
+    const filtered = countries.filter(country => 
+      country.name.toLowerCase().includes(term)
+    );
+    setFilteredCountries(filtered);
   };
 
   const handleCountrySelect = (countryName) => {

@@ -38,7 +38,7 @@ const ProgressBar = () => {
   return (
     <Container className={classes.container}>
       <Box className={classes.box}>
-        {surveyData.questions.map((_, index) => (
+        {surveyData.questions.map((item, index) => (
           <Box
             key={index}
             className={`${classes.segment} ${index <= currentQuestionIndex ? classes.activeSegment : classes.inactiveSegment}`}

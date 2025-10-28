@@ -2,12 +2,14 @@ import React from 'react';
 import { TextField } from '@material-ui/core';
 
 const TextQuestion = ({ value, onChange }) => {
+  const handleOnChange = (e) => onChange(e.target.value);
+
   return (
     <TextField
       variant="outlined"
       label="Your answer"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={handleOnChange}
       fullWidth
       multiline
       rows={2}

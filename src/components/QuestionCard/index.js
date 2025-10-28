@@ -78,14 +78,15 @@ export default function QuestionCard() {
   const handleNext = () => {
     dispatch(setAnswer(currentQuestion.id, currentAnswer));
 
-    if (!isLastQuestion) {
-      dispatch(setCurrentQuestion(currentQuestionIndex + 1));
-      const nextQuestionId = currentQuestion.id + 1;
-      const nextAnswer = answers[nextQuestionId] || '';
-      dispatch(setCurrentAnswer(nextAnswer));
-    } else {
+    if (isLastQuestion) {
       dispatch(showResultsAction());
+      return;
     }
+
+    dispatch(setCurrentQuestion(currentQuestionIndex + 1));
+    const nextQuestionId = currentQuestion.id + 1;
+    const nextAnswer = answers[nextQuestionId] || '';
+    dispatch(setCurrentAnswer(nextAnswer));
   };
 
   const handlePrevious = () => {
@@ -95,32 +96,24 @@ export default function QuestionCard() {
     dispatch(setCurrentAnswer(prevAnswer));
   };
 
+  const QUESTION_COMPONENTS = {
+    [QUESTION_TYPES.TEXT]: TextQuestion,
+    [QUESTION_TYPES.IMAGE_SELECT]: ImageSelectQuestion,
+    [QUESTION_TYPES.CHECKBOXES]: CheckboxesQuestion,
+    [QUESTION_TYPES.LINEAR_SCALE]: LinearScaleQuestion,
+    [QUESTION_TYPES.YES_NO]: YesNoQuestion,
+    [QUESTION_TYPES.COUNTRY_LIST]: CountryListQuestion,
+    [QUESTION_TYPES.PHONE_NUMBER]: PhoneNumberQuestion,
+    [QUESTION_TYPES.DATE]: DateQuestion,
+    [QUESTION_TYPES.CSAT]: CSATQuestion,
+  };
   const renderQuestionComponent = () => {
-    switch (currentQuestion.type) {
-      case QUESTION_TYPES.TEXT:
-        return <TextQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.IMAGE_SELECT:
-        return <ImageSelectQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.CHECKBOXES:
-        return <CheckboxesQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.LINEAR_SCALE:
-        return <LinearScaleQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.YES_NO:
-        return <YesNoQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.COUNTRY_LIST:
-        return <CountryListQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.PHONE_NUMBER:
-        return <PhoneNumberQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.DATE:
-        return <DateQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      case QUESTION_TYPES.CSAT:
-        return <CSATQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-      default:
-        return <TextQuestion question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
-    }
+    const Component = QUESTION_COMPONENTS[currentQuestion.type];
+    
+    return <Component question={currentQuestion} value={currentAnswer} onChange={handleAnswerChange} />;
   };
 
-  if (showResults === true) {
+  if (!!showResults) {
     return <ResultsView />;
   }
 
