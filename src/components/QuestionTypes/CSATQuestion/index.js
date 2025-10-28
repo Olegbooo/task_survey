@@ -1,9 +1,10 @@
 import React from 'react';
 import { Box, IconButton, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { compose } from 'redux';
 import { CSAT_EMOJIS } from '../../../data/constants';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   emojiContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -64,10 +65,9 @@ const useStyles = makeStyles((theme) => ({
       fontSize: '0.7rem !important',
     },
   },
-}));
+});
 
-const CSATQuestion = ({ value, onChange }) => {
-  const classes = useStyles();
+const CSATQuestion = ({ value, onChange, classes }) => {
 
   return (
     <Box>
@@ -90,4 +90,6 @@ const CSATQuestion = ({ value, onChange }) => {
   );
 };
 
-export default CSATQuestion;
+export default compose(
+  withStyles(styles)
+)(CSATQuestion);

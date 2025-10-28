@@ -1,13 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { TextField, InputAdornment, Box, Typography, Paper, ClickAwayListener, Portal } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { compose } from 'redux';
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
 import en from 'react-phone-number-input/locale/en.json';
 import { hasFlag } from 'country-flag-icons';
 import Flags from 'country-flag-icons/react/3x2';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   container: {
     display: 'flex',
     width: '100%',
@@ -99,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   phoneInputField: {
     height: '40px',
   },
-}));
+});
 
 const CountryFlag = ({ country, className }) => {
   const isHasCountryFlag = hasFlag(country);
@@ -111,8 +112,7 @@ const CountryFlag = ({ country, className }) => {
   return <FlagComponent title={country} className={className} />;
 };
 
-const PhoneNumberQuestion = ({ value, onChange }) => {
-  const classes = useStyles();
+const PhoneNumberQuestion = ({ value, onChange, classes }) => {
   const [state, setState] = useState({
     selectedCountry: 'US',
     phoneNumber: '',
@@ -327,4 +327,6 @@ const PhoneNumberQuestion = ({ value, onChange }) => {
   );
 };
 
-export default PhoneNumberQuestion;
+export default compose(
+  withStyles(styles)
+)(PhoneNumberQuestion);

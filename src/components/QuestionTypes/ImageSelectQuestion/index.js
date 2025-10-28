@@ -1,8 +1,9 @@
 import React from 'react';
 import { Box, Checkbox, Card, CardMedia, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { compose } from 'redux';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   imageGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
@@ -29,10 +30,9 @@ const useStyles = makeStyles((theme) => ({
   caption: {
     padding: 8,
   },
-}));
+});
 
-const ImageSelectQuestion = ({ question, value = [], onChange }) => {
-  const classes = useStyles();
+const ImageSelectQuestion = ({ question, value = [], onChange, classes }) => {
 
   const handleImageToggle = (imageId) => {
     const newValue = value.includes(imageId)
@@ -68,4 +68,6 @@ const ImageSelectQuestion = ({ question, value = [], onChange }) => {
   );
 };
 
-export default ImageSelectQuestion;
+export default compose(
+  withStyles(styles)
+)(ImageSelectQuestion);

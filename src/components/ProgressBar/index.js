@@ -1,10 +1,12 @@
 import React from 'react';
-import { Container, Box, makeStyles } from '@material-ui/core';
-import { useSelector } from 'react-redux';
+import { Container, Box } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { surveyData } from '../../data/questions';
 
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   container: {
     width: '100%',
     marginTop: '1rem',
@@ -29,11 +31,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-}));
+});
 
-const ProgressBar = () => {
-  const classes = useStyles();
-  const currentQuestionIndex = useSelector(state => state.quiz.currentQuestionIndex);
+const ProgressBar = ({ currentQuestionIndex, classes }) => {
 
   return (
     <Container className={classes.container}>
@@ -49,4 +49,11 @@ const ProgressBar = () => {
   );
 };
 
-export default ProgressBar;
+const mapStateToProps = (state) => ({
+  currentQuestionIndex: state.quiz.currentQuestionIndex,
+});
+
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles)
+)(ProgressBar);

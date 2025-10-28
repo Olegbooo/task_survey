@@ -1,6 +1,8 @@
 import React from 'react';
-import { Container, Card, CardContent, Typography, Box, Button, useTheme, makeStyles } from '@material-ui/core';
-import { useSelector, useDispatch } from 'react-redux';
+import { Container, Card, CardContent, Typography, Box, Button } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { surveyData, QUESTION_TYPES } from '../../data/questions';
 import { setAnswer, setCurrentQuestion, setCurrentAnswer, showResults as showResultsAction, goToPrevious } from '../../store/actions/quizActions';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -17,7 +19,7 @@ import DateQuestion from '../QuestionTypes/DateQuestion';
 import CSATQuestion from '../QuestionTypes/CSATQuestion';
 import ResultsView from '../ResultsView';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -59,41 +61,49 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: '16px',
   },
-}));
+});
 
-export default function QuestionCard() {
-  const classes = useStyles();
-  const theme = useTheme();
-  const dispatch = useDispatch();
-  const { currentQuestionIndex, currentAnswer, answers, showResults } = useSelector(state => state.quiz || {});
+const QuestionCard = ({ 
+  currentQuestionIndex, 
+  currentAnswer, 
+  answers, 
+  showResults,
+  setAnswer,
+  setCurrentQuestion,
+  setCurrentAnswer,
+  showResultsAction,
+  goToPrevious,
+  classes,
+  theme,
+}) => {
 
   const currentQuestion = surveyData.questions[currentQuestionIndex || 0];
   const isLastQuestion = (currentQuestionIndex || 0) === surveyData.questions.length - 1;
   const isFirstQuestion = (currentQuestionIndex || 0) === 0;
 
   const handleAnswerChange = (value) => {
-    dispatch(setCurrentAnswer(value));
+    setCurrentAnswer(value);
   };
 
   const handleNext = () => {
-    dispatch(setAnswer(currentQuestion.id, currentAnswer));
+    setAnswer(currentQuestion.id, currentAnswer);
 
     if (isLastQuestion) {
-      dispatch(showResultsAction());
+      showResultsAction();
       return;
     }
 
-    dispatch(setCurrentQuestion(currentQuestionIndex + 1));
+    setCurrentQuestion(currentQuestionIndex + 1);
     const nextQuestionId = currentQuestion.id + 1;
     const nextAnswer = answers[nextQuestionId] || '';
-    dispatch(setCurrentAnswer(nextAnswer));
+    setCurrentAnswer(nextAnswer);
   };
 
   const handlePrevious = () => {
-    dispatch(goToPrevious());
+    goToPrevious();
     const prevQuestionId = currentQuestion.id - 1;
     const prevAnswer = answers[prevQuestionId] || '';
-    dispatch(setCurrentAnswer(prevAnswer));
+    setCurrentAnswer(prevAnswer);
   };
 
   const QUESTION_COMPONENTS = {
@@ -174,4 +184,24 @@ export default function QuestionCard() {
       </Card>
     </Container>
   );
-}
+};
+
+const mapStateToProps = (state) => ({
+  currentQuestionIndex: state.quiz.currentQuestionIndex,
+  currentAnswer: state.quiz.currentAnswer,
+  answers: state.quiz.answers,
+  showResults: state.quiz.showResults,
+});
+
+const mapDispatchToProps = {
+  setAnswer,
+  setCurrentQuestion,
+  setCurrentAnswer,
+  showResultsAction,
+  goToPrevious,
+};
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles, { withTheme: true })
+)(QuestionCard);

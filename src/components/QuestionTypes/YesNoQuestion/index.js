@@ -1,10 +1,11 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { compose } from 'redux';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   buttonContainer: {
     display: 'flex',
     gap: theme.spacing(2),
@@ -37,10 +38,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#f44336 !important',
     },
   },
-}));
+});
 
-const YesNoQuestion = ({ value, onChange }) => {
-  const classes = useStyles();
+const YesNoQuestion = ({ value, onChange, classes }) => {
 
   return (
     <Box className={classes.buttonContainer}>
@@ -66,4 +66,6 @@ const YesNoQuestion = ({ value, onChange }) => {
   );
 };
 
-export default YesNoQuestion;
+export default compose(
+  withStyles(styles)
+)(YesNoQuestion);

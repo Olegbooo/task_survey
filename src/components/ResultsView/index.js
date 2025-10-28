@@ -1,13 +1,14 @@
 import React from 'react';
 import { Container, Card, CardContent, Typography, Box, Button, Divider } from '@material-ui/core';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
-import { useSelector, useDispatch } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { surveyData, QUESTION_TYPES } from '../../data/questions';
 import { CSAT_EMOJI_MAP } from '../../data/constants';
 import { resetQuiz } from '../../store/actions/quizActions';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -69,16 +70,12 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginBottom: '20px',
   },
-}));
+});
 
-const ResultsView = () => {
-  const classes = useStyles();
-  const theme = useTheme();
-  const dispatch = useDispatch();
-  const { answers } = useSelector(state => state.quiz);
+const ResultsView = ({ answers, resetQuiz, classes, theme }) => {
 
   const handleRestart = () => {
-    dispatch(resetQuiz());
+    resetQuiz();
   };
 
   const formatAnswer = (question, answer) => {
@@ -171,4 +168,15 @@ const ResultsView = () => {
   );
 };
 
-export default ResultsView;
+const mapStateToProps = (state) => ({
+  answers: state.quiz.answers,
+});
+
+const mapDispatchToProps = {
+  resetQuiz,
+};
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles, { withTheme: true })
+)(ResultsView);

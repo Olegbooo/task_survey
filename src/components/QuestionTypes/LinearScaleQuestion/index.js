@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { compose } from 'redux';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   starsContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -33,11 +34,9 @@ const useStyles = makeStyles((theme) => ({
   hovered: {
     color: theme.palette.warning.light,
   },
-}));
+});
 
-const LinearScaleQuestion = ({ question, value, onChange }) => {
-  const classes = useStyles();
-  const theme = useTheme();
+const LinearScaleQuestion = ({ question, value, onChange, classes }) => {
   const maxValue = question.maxValue;
 
   const [hoverValue, setHoverValue] = useState(null);
@@ -67,4 +66,6 @@ const LinearScaleQuestion = ({ question, value, onChange }) => {
   );
 };
 
-export default LinearScaleQuestion;
+export default compose(
+  withStyles(styles)
+)(LinearScaleQuestion);

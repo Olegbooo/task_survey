@@ -1,10 +1,10 @@
 import { Box } from "@material-ui/core";
 import ProgressBar from "../components/ProgressBar";
 import QuestionCard from "../components/QuestionCard";
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
+import { compose } from 'redux';
 
-const useStyles = makeStyles((theme) => ({
-
+const styles = (theme) => ({
   container: {
     height: '100vh',
     display: 'flex',
@@ -15,10 +15,9 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     display: 'flex',
   },
-}));
+});
 
-export default function QuizPage() {
-  const classes = useStyles();
+function QuizPage({ classes }) {
   return (
     <Box className={classes.container}>
       <ProgressBar />
@@ -28,3 +27,6 @@ export default function QuizPage() {
     </Box>
   );
 }
+export default compose(
+  withStyles(styles)
+)(QuizPage);

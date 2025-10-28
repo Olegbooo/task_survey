@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { TextField, InputAdornment, Typography, Paper, ClickAwayListener, Portal } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import SearchIcon from '@material-ui/icons/Search';
 import { hasFlag } from 'country-flag-icons';
 import Flags from 'country-flag-icons/react/3x2';
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => ({
   container: {
     position: 'relative',
     width: '100%',
@@ -47,15 +48,13 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
-}));
+});
 
-const CountryListQuestion = ({ onChange }) => {
-  const classes = useStyles();
+const CountryListQuestion = ({ onChange, countries, classes }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [filteredCountries, setFilteredCountries] = useState([]);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const countries = useSelector(state => state.quiz.countries);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -163,4 +162,11 @@ const CountryListQuestion = ({ onChange }) => {
   );
 };
 
-export default CountryListQuestion;
+const mapStateToProps = (state) => ({
+  countries: state.quiz.countries,
+});
+
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles)
+)(CountryListQuestion);
